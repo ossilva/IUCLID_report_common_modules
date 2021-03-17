@@ -7117,11 +7117,11 @@
 
 	<para>
 		<#if documentID=="ENDPOINT_STUDY_RECORD.ExposureRelatedObservationsOther">
-<#--            placeholder -->
-            <#elseif documentID=="ENDPOINT_STUDY_RECORD.SensitisationData">
-                Type of population: <@com.picklistMultiple study.MaterialsAndMethods.Method.TypeOfPopulation/>
-            <#else>
-				<@com.picklistMultiple study.MaterialsAndMethods.Method.TypeOfPopulation/>
+			<#-- placeholder -->
+		<#elseif documentID=="ENDPOINT_STUDY_RECORD.SensitisationData">
+			Type of population: <@com.picklistMultiple study.MaterialsAndMethods.Method.TypeOfPopulation/>
+		<#else>
+			<@com.picklistMultiple study.MaterialsAndMethods.Method.TypeOfPopulation/>
 		</#if>
 	</para>
 

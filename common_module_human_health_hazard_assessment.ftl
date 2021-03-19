@@ -7249,7 +7249,7 @@
 	</#if>
 
 	<#-- species and strain -->
-	<#if !(documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro") || !(documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation")>
+	<#if !(documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro" || documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation")>
 		<para>
 			<#if study.hasElement("MaterialsAndMethods.TestAnimals.Species")>
 			<@com.picklist study.MaterialsAndMethods.TestAnimals.Species/> 

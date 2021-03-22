@@ -7383,16 +7383,17 @@
 	<#--  type of inhalation -->
 	<#if !(carcinoOtherValue?has_content ||
         carcinoOralValue?has_content ||
-        documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOther" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityInhalation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOral" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral" ||
-        documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
-        documentID=="ENDPOINT_STUDY_RECORD.Neurotoxicity" ||
-        documentID=="ENDPOINT_STUDY_RECORD.Immunotoxicity" ||
-        documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations")>
+        endpointContained(documentID, 
+        ["GeneticToxicityVivo",
+        "RepeatedDoseToxicityOther",
+        "RepeatedDoseToxicityInhalation",
+        "RepeatedDoseToxicityOral",
+        "AcuteToxicityInhalation",
+        "AcuteToxicityOral",
+        "BasicToxicokinetics",
+        "Neurotoxicity",
+        "Immunotoxicity",
+        "SpecificInvestigations"])>
 		<#if study.hasElement("MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable")>
 			(<@com.picklist study.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable/>)
 		</#if>

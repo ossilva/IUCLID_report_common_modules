@@ -7232,8 +7232,7 @@
 	</#if>
 
 	<#-- endpoint -->
-  <#if documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
-       documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
+  <#if documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
        documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption" ||
        documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation">
 		<para>
@@ -7281,8 +7280,7 @@
 		<para>
 			<@com.picklist study.MaterialsAndMethods.TestAnimals.Sex/>
 		</para>
-		</#if>
-		<#if study.hasElement("MaterialsAndMethods.InVivoTestSystem.TestAnimals.Sex")>
+		<#elseif study.hasElement("MaterialsAndMethods.InVivoTestSystem.TestAnimals.Sex")>
 		<para>
 			<@com.picklist study.MaterialsAndMethods.InVivoTestSystem.TestAnimals.Sex/>
 		</para>
@@ -7294,20 +7292,23 @@
 			</para>
 		</#if>
 
-		<#if !(carcinoOtherValue?has_content ||
-          carcinoDermalValue?has_content ||
-          carcinoInhalationValue?has_content ||
-          carcinoOralValue?has_content ||
-          documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
-          documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
-          documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation" ||
-          documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
-          documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
-          documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
-          documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral" ||
-          documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations" ||
-          documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetic" ||
-          documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption")>
+        <#if carcinoOtherValue?has_content ||
+            carcinoDermalValue?has_content ||
+            carcinoInhalationValue?has_content ||
+            carcinoOralValue?has_content ||
+            documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
+            documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
+            documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation" ||
+            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
+            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
+            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
+            documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOther" ||
+            documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityInhalation" ||
+            documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOral" ||
+            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral" ||
+            documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations" ||
+            documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetic" ||
+            documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption">
 			<para>
 				${endpointData}
 			</para>
@@ -7383,7 +7384,7 @@
 	</#if>	
 	
 	<#--  type of inhalation -->
-	<#if !(carcinoOtherValue?has_content ||
+    <#if carcinoOtherValue?has_content ||
         carcinoOralValue?has_content ||
         documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
         documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOther" ||
@@ -7394,7 +7395,7 @@
         documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
         documentID=="ENDPOINT_STUDY_RECORD.Neurotoxicity" ||
         documentID=="ENDPOINT_STUDY_RECORD.Immunotoxicity" ||
-        documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations")>
+        documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations">
 		<#if study.hasElement("MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable")>
 			(<@com.picklist study.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable/>)
 		</#if>

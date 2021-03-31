@@ -7416,7 +7416,9 @@
         documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
         documentID=="ENDPOINT_STUDY_RECORD.Neurotoxicity" ||
         documentID=="ENDPOINT_STUDY_RECORD.Immunotoxicity" ||
-        documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations">
+        documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations" ||
+        documentID=="ENDPOINT_STUDY_RECORD.ToxicityReproduction" ||
+        documentID=="ENDPOINT_STUDY_RECORD.ToxicityReproductionOther">
         <#if study.hasElement("MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable")>
             (<@com.picklist study.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable/>)
         </#if>

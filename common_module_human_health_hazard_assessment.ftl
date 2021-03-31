@@ -7173,13 +7173,43 @@
 <#local adminpath = "study." + "AdministrativeData.Endpoint" />
 <#local pathAdmin = adminpath?eval />
 
-<#local carcinoOralValue><#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: oral"])></#if></#local>
-<#local carcinoInhalationValue><#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: inhalation"])></#if></#local>
-<#local carcinoDermalValue><#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: dermal"])></#if></#local>
-<#local carcinoOtherValue><#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity, other"])></#if></#local>
+<#local carcinoOralValue>
+    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: oral"])></#if>
+        </#local>
+        <#local carcinoInhalationValue>
+    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: inhalation"])></#if>
+        </#local>
+        <#local carcinoDermalValue>
+    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: dermal"])></#if>
+        </#local>
+        <#local carcinoOtherValue>
+    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity, other"])></#if>
+        </#local>
 
-<#assign skinIrritation = getSortedSkinIrritationNonHumanStudy(study, ["skin irritation: in vitro / ex vivo", "skin irritation: in vivo", "skin irritation / corrosion, other"] ) />			
-<#assign skinCorrosion = getSortedSkinCorrosionNonHumanStudy(study, ["skin corrosion: in vitro / ex vivo", "skin irritation / corrosion.*"]) />			
+        <#local isEndpointForAcuteToxicity=(
+        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
+        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
+        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
+        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral")>
+
+        <#local isEndpointForRepeatedToxicityGroup=(
+        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOther" ||
+        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityInhalation" ||
+        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOral")>
+
+        <#local isEndpointForSeparatelyHandled=(
+        documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro" ||
+        documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
+        documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation" ||
+        documentID=="ENDPOINT_STUDY_RECORD.EyeIrritation")>
+
+        <#local isEndpointWithInVitroIndicator=(
+        documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
+        documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
+        documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption" ||
+        documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation")>
+        <#assign skinIrritation = getSortedSkinIrritationNonHumanStudy(study, ["skin irritation: in vitro / ex vivo", "skin irritation: in vivo", "skin irritation / corrosion, other"] ) />			
+        <#assign skinCorrosion = getSortedSkinCorrosionNonHumanStudy(study, ["skin corrosion: in vitro / ex vivo", "skin irritation / corrosion.*"]) />			
 
 <#if csrRelevant??><#local endpointData><@com.picklist study.AdministrativeData.Endpoint/></#local></#if>
 
@@ -7231,18 +7261,16 @@
 		</para>
 	</#if>
 
-	<#-- endpoint -->
-  <#if documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
-       documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption" ||
-       documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation">
-		<para>
-			${endpointData}
-		</para>
+    <#-- endpoint -->
+    <#if isEndpointWithInVitroIndicator>
+        <para>
+            ${endpointData}
+        </para>
 
-		<#if !endpointData?contains("in vivo")>
-			<para>in vitro study</para>
-		</#if>
-	</#if>
+       <#if !endpointData?contains("in vivo")>
+           <para>in vitro study</para>
+       </#if>
+   </#if>
 	
 	<#-- tissue studied -->
 	<#if skinCorrosion?has_content>
@@ -7250,7 +7278,8 @@
 	</#if>
 
 	<#-- species and strain -->
-	<#if !(documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro" || documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation")>
+	<#if !(documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro" ||
+        documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation")>
 		<para>
 			<#if study.hasElement("MaterialsAndMethods.TestAnimals.Species")>
 			<@com.picklist study.MaterialsAndMethods.TestAnimals.Species/>
@@ -7286,29 +7315,20 @@
 		</para>
 		</#if>
 
-		<#if documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" || documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption">
-			<para>
-				Coverage (dermal absorption study): <@com.picklist study.MaterialsAndMethods.AdministrationExposure.TypeOfCoverage/>
-			</para>
-		</#if>
+        <#if documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" || documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption">
+            <para>
+            Coverage (dermal absorption study): <@com.picklist study.MaterialsAndMethods.AdministrationExposure.TypeOfCoverage/>
+            </para>
+        </#if>
 
-        <#if carcinoOtherValue?has_content ||
+        <#if !(carcinoOtherValue?has_content ||
             carcinoDermalValue?has_content ||
             carcinoInhalationValue?has_content ||
             carcinoOralValue?has_content ||
-            documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
+            isEndpointForAcuteToxicity ||
             documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
-            documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation" ||
-            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
-            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
-            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
-            documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOther" ||
-            documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityInhalation" ||
-            documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOral" ||
-            documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral" ||
             documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations" ||
-            documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetic" ||
-            documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption">
+            isEndpointWithInVitroIndicator)>
 			<para>
 				${endpointData}
 			</para>
@@ -7361,15 +7381,12 @@
 
 	<#-- route of administration and type of inhalation -->
 	<#if !(carcinoDermalValue?has_content ||
-        documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro" ||
+        isEndpointForSeparatelyHandled ||
         documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityDermal" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.EyeIrritation" ||
-        skinIrritation?has_content ||
-        skinCorrosion?has_content ||
         documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal")>
+        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
+        skinIrritation?has_content ||
+        skinCorrosion?has_content)>
 	<para>
 		<#if study.hasElement("MaterialsAndMethods.AdministrationExposure.RouteOfAdministration")>
 		<@com.picklist study.MaterialsAndMethods.AdministrationExposure.RouteOfAdministration/> 
@@ -7386,10 +7403,8 @@
 	<#--  type of inhalation -->
     <#if carcinoOtherValue?has_content ||
         carcinoOralValue?has_content ||
+        isEndpointForRepeatedToxicityGroup ||
         documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOther" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityInhalation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOral" ||
         documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
         documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral" ||
         documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics" ||
@@ -7420,16 +7435,10 @@
 	</#if>
 
 	<#-- doses concentration -->
-	<#if !(documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.EyeIrritation" ||
+	<#if !(isEndpointForSeparatelyHandled ||
         skinIrritation?has_content ||
         skinCorrosion?has_content ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation")>
+        isEndpointForAcuteToxicity)>
 		<#if !(documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption")>
 		
 			<para>
@@ -7455,7 +7464,16 @@
 		
 		</#if>
 		
-		<#elseif documentID=="ENDPOINT_STUDY_RECORD.Neurotoxicity" || documentID=="ENDPOINT_STUDY_RECORD.Immunotoxicity" || documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations" || documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" || documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOral" || documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityInhalation" || documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityDermal" || documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityOther" || documentID=="ENDPOINT_STUDY_RECORD.Carcinogenicity" || documentID=="ENDPOINT_STUDY_RECORD.ToxicityReproduction" || documentID=="ENDPOINT_STUDY_RECORD.ToxicityReproductionOther" || documentID=="ENDPOINT_STUDY_RECORD.DevelopmentalToxicityTeratogenicity"> 
+    <#elseif documentID=="ENDPOINT_STUDY_RECORD.Neurotoxicity" ||
+        documentID=="ENDPOINT_STUDY_RECORD.Immunotoxicity" ||
+        documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations" ||
+        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
+        isEndpointForRepeatedToxicityGroup ||
+        documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityDermal" ||
+        documentID=="ENDPOINT_STUDY_RECORD.Carcinogenicity" ||
+        documentID=="ENDPOINT_STUDY_RECORD.ToxicityReproduction" ||
+        documentID=="ENDPOINT_STUDY_RECORD.ToxicityReproductionOther" ||
+        documentID=="ENDPOINT_STUDY_RECORD.DevelopmentalToxicityTeratogenicity"> 
 			<para>
 				<#if study.hasElement("MaterialsAndMethods.AdministrationExposure.Vehicle")>
 				Vehicle: <@com.picklist study.MaterialsAndMethods.AdministrationExposure.Vehicle/>
@@ -7474,16 +7492,10 @@
 
 	<#-- duration of exposure, frequency of treatment, in vitro test system -->
 	<#if !(documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
-        documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVitro" ||
-        documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.SkinSensitisation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.EyeIrritation" ||
+        isEndpointForSeparatelyHandled ||
         skinIrritation?has_content ||
         skinCorrosion?has_content ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
-        documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOral")>
+        isEndpointForAcuteToxicity)>
 		<#if !(documentID=="ENDPOINT_STUDY_RECORD.DermalAbsorption") || !(documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics") >
 	
 		<para>

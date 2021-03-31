@@ -7173,6 +7173,11 @@
 <#local adminpath = "study." + "AdministrativeData.Endpoint" />
 <#local pathAdmin = adminpath?eval />
 
+<#local isCarcinoOral=com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: oral"])/>
+<#local isCarcinoInhalation=com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: inhalation"])/>
+<#local isCarcinoDermal=com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: dermal"])/>
+<#local isCarcinoOther=com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: other"])/>
+
 <#local carcinoOralValue>
     <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: oral"])></#if>
         </#local>
@@ -7321,10 +7326,10 @@
             </para>
         </#if>
 
-        <#if !(carcinoOtherValue?has_content ||
-            carcinoDermalValue?has_content ||
-            carcinoInhalationValue?has_content ||
-            carcinoOralValue?has_content ||
+        <#if !(isCarcinoOther ||
+            isCarcinoDermal ||
+            isCarcinoInhalation ||
+            isCarcinoOral ||
             isEndpointForAcuteToxicity ||
             documentID=="ENDPOINT_STUDY_RECORD.RespiratorySensitisation" ||
             documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations" ||
@@ -7380,7 +7385,7 @@
 	</#if>
 
 	<#-- route of administration and type of inhalation -->
-	<#if !(carcinoDermalValue?has_content ||
+	<#if !(isCarcinoDermal ||
         isEndpointForSeparatelyHandled ||
         documentID=="ENDPOINT_STUDY_RECORD.RepeatedDoseToxicityDermal" ||
         documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
@@ -7401,8 +7406,9 @@
 	</#if>	
 	
 	<#--  type of inhalation -->
-    <#if carcinoOtherValue?has_content ||
-        carcinoOralValue?has_content ||
+    <#if isCarcinoOther ||
+        isCarcinoOral ||
+        isCarcinoInhalation ||
         isEndpointForRepeatedToxicityGroup ||
         documentID=="ENDPOINT_STUDY_RECORD.GeneticToxicityVivo" ||
         documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityInhalation" ||
@@ -7411,10 +7417,10 @@
         documentID=="ENDPOINT_STUDY_RECORD.Neurotoxicity" ||
         documentID=="ENDPOINT_STUDY_RECORD.Immunotoxicity" ||
         documentID=="ENDPOINT_STUDY_RECORD.SpecificInvestigations">
-		<#if study.hasElement("MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable")>
-			(<@com.picklist study.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable/>)
-		</#if>
-	</#if>
+        <#if study.hasElement("MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable")>
+            (<@com.picklist study.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposureIfApplicable/>)
+        </#if>
+    </#if>
 
 	<#--  frequency of treatment exposure -->
 	<#if documentID=="ENDPOINT_STUDY_RECORD.BasicToxicokinetics">

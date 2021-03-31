@@ -7178,19 +7178,6 @@
 <#local isCarcinoDermal=com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: dermal"])/>
 <#local isCarcinoOther=com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: other"])/>
 
-<#local carcinoOralValue>
-    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: oral"])></#if>
-        </#local>
-        <#local carcinoInhalationValue>
-    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: inhalation"])></#if>
-        </#local>
-        <#local carcinoDermalValue>
-    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity: dermal"])></#if>
-        </#local>
-        <#local carcinoOtherValue>
-    <#if com.picklistValueMatchesPhrases(pathAdmin, ["carcinogenicity, other"])></#if>
-        </#local>
-
         <#local isEndpointForAcuteToxicity=(
         documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityOtherRoutes" ||
         documentID=="ENDPOINT_STUDY_RECORD.AcuteToxicityDermal" ||
